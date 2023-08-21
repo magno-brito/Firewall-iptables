@@ -30,9 +30,13 @@
 - O usuário deverá informar: o em qual cadeia está a regra:
   * Entrada, Saída, Encaminhamento.
   * O número da regra a ser excluída.
+    
 4 - Listar todas as regras
+
 5 - Apagar todas as regras
+
 6 - Salvar as regras do firewall (criar um arquivo com nome informado pelo usuário)
+
 7 - Restaurar as regras do firewall (restaurar do arquivo criado previamente)
 
 Deve-se criar cada opção na forma de função. O menu principal e todos os
