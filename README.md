@@ -46,3 +46,26 @@ Deve existir uma opção que ao ser escolhida, encerra o menu e
 consequentemente o script. Todas os dados de entrada e as saídas devem
 aparecer em caixas do Dialog ou Zenity. Deve existir um botão adicional com
 os dados dos participante.
+
+## Como utilizar este repositório
+
+Inicialmente clone este projeto para sua máquina
+
+``` git clone git@github.com:magno-brito/Firewall-iptables.git ```
+
+Após isso, um arquivo com o projeto estará em sua máquina local. Faça as modificações  neste aquirvo. Para marter o versionamento, crie uma branch em sua máquina para que você possa fazer os commits na sua branch pessoal (exemplo, branch Magno). Pare isso digite o seguinte comando:
+
+``` git branch "Nome da branch" ```
+
+Em seguida precisamos mudar o HEAD do git para a branch criada
+
+```git checkout "Nome da branch```
+
+Agora basta adicionar as mudanças feitas no arquivo ao git e commitar
+
+```git add .```
+
+```git commit -m "mensagem" ```
+
+```git push origin "nome da branch" ```
+
