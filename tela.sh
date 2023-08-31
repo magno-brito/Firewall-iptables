@@ -1,2 +1,8 @@
-#!/bin/bash
-zenity --title "Iptables" --text-info   width=1000 heigh=1000 
+#/bin/bash
+
+zenity --text-info \
+	--title="Iptables" \
+	--checkbox=" Eu li e aceito os ters" \
+	--icon-name='call-start'
+
+
