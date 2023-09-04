@@ -40,7 +40,12 @@ criar_regra(){
 		2>/dev/null
     		> "$temporario"
 	)
-	
+	if [ "$item1" == "Início da lista" ];then
+	       	item1="1"
+	else 
+		item1="A"
+	fi	
+
 	echo "$item1"
 	
 		if [ $? -eq 1 ]; then
@@ -49,20 +54,61 @@ criar_regra(){
 		fi
 
 	item2=$(zenity --list --radiolist \
+                --title="Criar Regra" \
+                --text "Qual cadeia será criada a regra" \
+                --column "Marcar" \
+                --column "Cadeia" \
+                TRUE "INPUT" \
+                FALSE "OUTPUT" \
+                FALSE "FORWARD" \
+                --ok-label "Confirmar" \
+                 --cancel-label "Sair" \
+                --separator=" " \
+                2>/dev/null
+        >> "$temporario"
+        
+        )
+
+
+
+        echo "$item2"
+
+        if [ $? -eq 1 ]; then
+                rm "$temporario"
+        exit 1
+        fi
+
+
+
+
+
+	item3=$(zenity --list --radiolist \
     		--title="Criar Regra" \
     		--text "Selecione o Alvo da Regra" \
     		--column "Marcar" \
     		--column "Alvo da Regra" \
-    		TRUE "Inicio" \
-    		FALSE "Meio" \
-   		FALSE "Fim" \
+    		TRUE "Aceitar" \
+    		FALSE "Rejeitar" \
+   		FALSE "Descartar" \
     		--ok-label "Confirmar" \
    		 --cancel-label "Sair" \
     		--separator=" " \
 		2>/dev/null
     	>> "$temporario"
+	
 	)
-	echo "$item2"
+	
+	if [ "$item3" == "Inicio" ]; then
+		item3=0
+	elif [ "$item3" == "Meio" ]; then
+		item3=1
+	else
+		item3=2
+	fi
+
+
+	echo "$item3"
+	
 	if [ $? -eq 1 ]; then
     		rm "$temporario"
     	exit 1
