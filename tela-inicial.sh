@@ -40,7 +40,12 @@ criar_regra(){
 		2>/dev/null
     		> "$temporario"
 	)
-	
+	if [ "$item1" == "Início da lista" ];then
+	       	item1="1"
+	else 
+		item1="A"
+	fi	
+
 	echo "$item1"
 	
 		if [ $? -eq 1 ]; then
