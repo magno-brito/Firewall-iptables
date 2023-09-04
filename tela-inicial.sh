@@ -27,7 +27,7 @@ criar_regra(){
 	echo "Criar uma regra"
 	temporario=$(mktemp)
 
-	zenity --list --radiolist \
+       item1=$(zenity --list --radiolist \
     		--title="Criar Regra" \
     		--text "Selecione em qual posição a regra será criada" \
     		--column "Marcar" \
@@ -37,32 +37,38 @@ criar_regra(){
     		--ok-label "Próximo" \
     		--cancel-label "Sair" \
     		--separator=" " \
+		2>/dev/null
     		> "$temporario"
-
+	)
+	
+	echo "$item1"
+	
 		if [ $? -eq 1 ]; then
     			rm "$temporario"
     		exit 1
-	fi
+		fi
 
-	zenity --list --radiolist \
+	item2=$(zenity --list --radiolist \
     		--title="Criar Regra" \
     		--text "Selecione o Alvo da Regra" \
     		--column "Marcar" \
     		--column "Alvo da Regra" \
     		TRUE "Inicio" \
     		FALSE "Meio" \
-   		 FALSE "Fim" \
+   		FALSE "Fim" \
     		--ok-label "Confirmar" \
    		 --cancel-label "Sair" \
     		--separator=" " \
+		2>/dev/null
     	>> "$temporario"
-
+	)
+	echo "$item2"
 	if [ $? -eq 1 ]; then
     		rm "$temporario"
     	exit 1
 	fi
 	
-zenity --forms --title="Criar Regra" \
+     item3=$(zenity --forms --title="Criar Regra" \
 	--text="Opções de filtragem" \
 	--separator="," \
 	--add-entry="Endereço de Origem" \
@@ -74,8 +80,9 @@ zenity --forms --title="Criar Regra" \
 	--add-entry="Estado" \
 	--add-entry="Interface de Entrada" \
 	--add-entry="Interface de Saída"
-
-
+        2>/dev/null
+	)
+echo "$item3"
 	>> "$temporario"
 
         if [ $? -eq 1 ]; then
