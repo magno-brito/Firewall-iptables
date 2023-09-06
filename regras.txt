@@ -1,8 +1,16 @@
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
+ACCEPT     icmp --  anywhere             anywhere            
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+DROP       all  --  192.168.1.0/24       anywhere            
 
 Chain FORWARD (policy DROP)
 target     prot opt source               destination         
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
 DOCKER-USER  all  --  anywhere             anywhere            
 DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere            
 ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
@@ -12,6 +20,10 @@ ACCEPT     all  --  anywhere             anywhere
 
 Chain OUTPUT (policy ACCEPT)
 target     prot opt source               destination         
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+REJECT     icmp --  anywhere             anywhere             reject-with icmp-port-unreachable
+REJECT     icmp --  anywhere             anywhere             reject-with icmp-port-unreachable
 
 Chain DOCKER (1 references)
 target     prot opt source               destination         

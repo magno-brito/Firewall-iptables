@@ -87,9 +87,9 @@ criar_regra(){
     		--text "Selecione o Alvo da Regra" \
     		--column "Marcar" \
     		--column "Alvo da Regra" \
-    		TRUE "Aceitar" \
-    		FALSE "Rejeitar" \
-   		FALSE "Descartar" \
+    		TRUE "ACCEPT" \
+    		FALSE "REJECT" \
+   		FALSE "DROP" \
     		--ok-label "Confirmar" \
    		 --cancel-label "Sair" \
     		--separator=" " \
@@ -98,14 +98,6 @@ criar_regra(){
 	
 	)
 	
-	if [ "$item3" == "Inicio" ]; then
-		item3=0
-	elif [ "$item3" == "Meio" ]; then
-		item3=1
-	else
-		item3=2
-	fi
-
 
 	echo "$item3"
 	
@@ -114,7 +106,7 @@ criar_regra(){
     	exit 1
 	fi
 	
-     item3=$(zenity --forms --title="Criar Regra" \
+     item4=$(zenity --forms --title="Criar Regra" \
 	--text="Opções de filtragem" \
 	--separator="," \
 	--add-entry="Endereço de Origem" \
@@ -127,8 +119,24 @@ criar_regra(){
 	--add-entry="Interface de Entrada" \
 	--add-entry="Interface de Saída"
         2>/dev/null
-	)
-echo "$item3"
+	
+)
+
+IFS=',' read -r endereco_origem endereco_destino protocolo porta_origem porta_destino endereco_mac estado interface_entrada interface_saida <<< "$item4"
+
+
+echo "Endereço de Origem: $endereco_origem"
+echo "Endereço de Destino: $endereco_destino"
+echo "Protocolo: $protocolo"
+echo "Porta de Origem: $porta_origem"
+echo "Porta de Destino: $porta_destino"
+echo "Endereço MAC: $endereco_mac"
+echo "Estado: $estado"
+echo "Interface de Entrada: $interface_entrada"
+echo "Interface de Saída: $interface_saida"
+
+
+echo "$item4"
 	>> "$temporario"
 
         if [ $? -eq 1 ]; then
@@ -143,7 +151,17 @@ echo "$item3"
 
 	rm "$temporario"
 
+     if [ "$item1" == "1" ]; then
+ 	     sudo iptables -I "$item2" 1  -s $endereco_origem -d $endereco_destino -p $protocolo --sport $porta_origem --dport $porta_destino  -m state --state $estado -i $interface_entrada -o $intercade_saida     -j $item3
+    else
+	   sudo iptables -A "$item2" -s $endereco_origem -d $endereco_destino -p $protocolo --sport $porta_origem --dport $porta_destino -m state --state $estado -i $interface_entrada -o $intercade_saida  -j $item3
+     fi
+    echo "Regra criada com sucesso!" 
 }
+
+
+
+
 
 
 configurar_politica() {
