@@ -114,7 +114,6 @@ criar_regra(){
 	--add-entry="Protocolo" \
 	--add-entry="Porta de Origem" \
 	--add-entry="Porta de Destino" \
-	--add-entry="Endereço MAC" \
 	--add-entry="Estado" \
 	--add-entry="Interface de Entrada" \
 	--add-entry="Interface de Saída"
@@ -122,7 +121,7 @@ criar_regra(){
 	
 )
 
-IFS=',' read -r endereco_origem endereco_destino protocolo porta_origem porta_destino endereco_mac estado interface_entrada interface_saida <<< "$item4"
+IFS=',' read -r endereco_origem endereco_destino protocolo porta_origem porta_destino estado interface_entrada interface_saida <<< "$item4"
 
 
 echo "Endereço de Origem: $endereco_origem"
@@ -130,7 +129,6 @@ echo "Endereço de Destino: $endereco_destino"
 echo "Protocolo: $protocolo"
 echo "Porta de Origem: $porta_origem"
 echo "Porta de Destino: $porta_destino"
-echo "Endereço MAC: $endereco_mac"
 echo "Estado: $estado"
 echo "Interface de Entrada: $interface_entrada"
 echo "Interface de Saída: $interface_saida"
@@ -152,9 +150,21 @@ echo "$item4"
 	rm "$temporario"
 
      if [ "$item1" == "1" ]; then
- 	     sudo iptables -I "$item2" 1  -s $endereco_origem -d $endereco_destino -p $protocolo --sport $porta_origem --dport $porta_destino  -m state --state $estado -i $interface_entrada -o $intercade_saida     -j $item3
+ 	     sudo iptables -I "$item2" 1  -s $endereco_origem -d $endereco_destino \
+		     -p $protocolo --sport $porta_origem --dport $porta_destino \
+		     -m state --state "$estado" -i "$interface_entrada"  -j $item3
     else
-	   sudo iptables -A "$item2" -s $endereco_origem -d $endereco_destino -p $protocolo --sport $porta_origem --dport $porta_destino -m state --state $estado -i $interface_entrada -o $intercade_saida  -j $item3
+
+	   if [ "$item2" == "INPUT" ];then		   
+	    	sudo iptables -A "$item2" -s $endereco_origem -d $endereco_destino \
+		   -p $protocolo --sport $porta_origem --dport $porta_destino \
+		   -m state --state "$estado" -i "$interface_entrada"   -j $item3
+		else
+				   sudo iptables -A "$item2" -s $endereco_origem -d $endereco_destino \
+                   -p $protocolo --sport $porta_origem --dport $porta_destino \
+                   -m state --state "$estado" -o "$interface_saida"   -j $item3
+	   fi
+
      fi
     echo "Regra criada com sucesso!" 
 }

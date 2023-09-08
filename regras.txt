@@ -1,16 +1,15 @@
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
-ACCEPT     icmp --  anywhere             anywhere            
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:http
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-DROP       all  --  192.168.1.0/24       anywhere            
+ACCEPT     tcp  --  0.0.0.0              0.0.0.1              tcp spt:http dpt:ssh
+ACCEPT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:http dpt:ssh
+ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
+ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
+ACCEPT     tcp  --  one.one.one.one      0.0.0.2              tcp spt:http dpt:81
 
 Chain FORWARD (policy DROP)
 target     prot opt source               destination         
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
+ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
 DOCKER-USER  all  --  anywhere             anywhere            
 DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere            
 ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
@@ -20,10 +19,10 @@ ACCEPT     all  --  anywhere             anywhere
 
 Chain OUTPUT (policy ACCEPT)
 target     prot opt source               destination         
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-REJECT     icmp --  anywhere             anywhere             reject-with icmp-port-unreachable
-REJECT     icmp --  anywhere             anywhere             reject-with icmp-port-unreachable
+REJECT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW reject-with icmp-port-unreachable
+ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
+DROP       tcp  --  192.168.1.0          10.10.10.10          tcp spt:81 dpt:82
+REJECT     tcp  --  one.one.one.one      2.2.2.2              tcp spt:ftp-data dpt:ssh reject-with icmp-port-unreachable
 
 Chain DOCKER (1 references)
 target     prot opt source               destination         
