@@ -1,10 +1,12 @@
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination         
+ACCEPT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:http dpt:ssh state NEW
 ACCEPT     tcp  --  0.0.0.0              0.0.0.1              tcp spt:http dpt:ssh
 ACCEPT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:http dpt:ssh
 ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
 ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
 ACCEPT     tcp  --  one.one.one.one      0.0.0.2              tcp spt:http dpt:81
+REJECT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:http dpt:ssh state ESTABLISHED reject-with icmp-port-unreachable
 
 Chain FORWARD (policy DROP)
 target     prot opt source               destination         
@@ -16,6 +18,7 @@ ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ES
 DOCKER     all  --  anywhere             anywhere            
 ACCEPT     all  --  anywhere             anywhere            
 ACCEPT     all  --  anywhere             anywhere            
+REJECT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh reject-with icmp-port-unreachable
 
 Chain OUTPUT (policy ACCEPT)
 target     prot opt source               destination         
@@ -23,6 +26,8 @@ REJECT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:s
 ACCEPT     tcp  --  192.168.1.100        10.0.0.1             tcp spt:http dpt:ssh state NEW
 DROP       tcp  --  192.168.1.0          10.10.10.10          tcp spt:81 dpt:82
 REJECT     tcp  --  one.one.one.one      2.2.2.2              tcp spt:ftp-data dpt:ssh reject-with icmp-port-unreachable
+REJECT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:ssh dpt:http reject-with icmp-port-unreachable
+ACCEPT     tcp  --  192.168.1.100        0.0.0.0              tcp spt:http dpt:ssh state NEW
 
 Chain DOCKER (1 references)
 target     prot opt source               destination         

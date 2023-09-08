@@ -139,6 +139,7 @@ echo "$item4"
 
         if [ $? -eq 1 ]; then
                 rm "$temporario"
+		zenity --error --text="Erro ao criar regra!"
         exit 1
         fi
 
@@ -166,7 +167,13 @@ echo "$item4"
 	   fi
 
      fi
-    echo "Regra criada com sucesso!" 
+    echo "Regra criada com sucesso!"
+
+   if [ $status -eq 0 ]; then
+	  zenity --info --text="Regra criada com sucesso!"
+  else
+	 zenity --error --text="Erro ao criar regra!"
+   fi 
 }
 
 
