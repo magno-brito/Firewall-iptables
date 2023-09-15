@@ -169,7 +169,7 @@ echo "$item4"
      fi
     echo "Regra criada com sucesso!"
 
-   if [ $status -eq 0 ]; then
+   if [ $? -eq 0 ]; then
 	  zenity --info --text="Regra criada com sucesso!"
   else
 	 zenity --error --text="Erro ao criar regra!"
@@ -183,10 +183,83 @@ echo "$item4"
 
 configurar_politica() {
 	echo "Configurar Política"
+	politica=$(zenity --list --radiolist \
+        --title="Configurar Política Padrão" \
+        --text "Selecione a política padrão:" \
+        --column "Marcar" \
+        --column "Política" \
+        TRUE "ACCEPT" \
+        FALSE "REJECT" \
+        FALSE "DROP" \
+        --ok-label "Confirmar" \
+        --cancel-label "Sair" \
+        --separator=" " \
+        2>/dev/null)
+
+    if [ $? -eq 1 ]; then
+        return 1
+    fi
+
+    cadeia=$(zenity --list --radiolist \
+        --title="Configurar Política Padrão" \
+        --text "Selecione a cadeia para configurar a política padrão:" \
+        --column "Marcar" \
+        --column "Cadeia" \
+        TRUE "INPUT" \
+        FALSE "OUTPUT" \
+        FALSE "FORWARD" \
+        --ok-label "Confirmar" \
+        --cancel-label "Sair" \
+        --separator=" " \
+        2>/dev/null)
+
+    if [ $? -eq 1 ]; then
+        return 1
+    fi
+
+    sudo iptables -P $cadeia $politica
+
+    if [ $? -eq 0 ]; then
+        zenity --info --text="Política padrão configurada com sucesso para a cadeia $cadeia."
+    else
+        zenity --error --text="Erro ao configurar a política padrão para a cadeia $cadeia."
+    fi
 }
+
 
 apagar_regra(){
 	echo "Apagar uma regra"
+
+	cadeia=$(zenity --list --radiolist \
+        --title="Apagar uma regra" \
+        --text "Selecione a cadeia da qual deseja apagar a regra:" \
+        --column "Marcar" \
+        --column "Cadeia" \
+        TRUE "INPUT" \
+        FALSE "OUTPUT" \
+        FALSE "FORWARD" \
+        --ok-label "Confirmar" \
+        --cancel-label "Sair" \
+        --separator=" " \
+        2>/dev/null)
+
+    if [ $? -eq 1 ]; then
+        return 1
+    fi
+
+    regra_numero=$(zenity --entry --title="Apagar uma regra" --text="Digite o número da regra que deseja apagar:")
+
+    if [ $? -eq 1 ] || [ -z "$regra_numero" ]; then
+        return 1
+    fi
+
+    sudo iptables -D $cadeia $regra_numero
+
+    if [ $? -eq 0 ]; then
+        zenity --info --text="Regra $regra_numero da cadeia $cadeia apagada com sucesso."
+    else
+        zenity --error --text="Erro ao apagar a regra $regra_numero da cadeia $cadeia."
+    fi
 }
 
 
@@ -201,16 +274,38 @@ listar_regras(){
 }
 
 apagar_todas_regras(){
-	echo "Apagar todas as regras"
+        echo "Apagando todas as regras do firewall"
+        sudo iptables -F
+        sudo iptables -X  
+        zenity --info --title "Apagar todas as regras do firewall" --text "Todas as regras do firewall foram removidas."
 }
 
 salvar_regras(){
-	echo "Salvas as regras do firewall"
+        nome_arquivo=$(zenity --entry --title "Salvar regras do firewall" --text "Digite o nome do arquivo para salvar as regras do firewall:")
+        if [ -z "$nome_arquivo" ]; then
+           zenity --error --title "Erro" --text "Nome do arquivo inválido. Insira um nome válido!"
+           return
+        fi
+
+        nome_arquivo="$nome_arquivo.txt"
+        sudo iptables-save > "$nome_arquivo"
+        zenity --info --title "Salvar regras do firewall" --text "As regras do firewall foram salvas em $nome_arquivo"
 }
 
+
 restaurar_regras(){
-	echo "Restaurar as regras do firewall"
+        nome_arquivo=$(zenity --file-selection --title "Restaurar regras do firewall" --file-filter="Arquivos de regras de firewall (*.rules *.txt) | *.rules *.txt")
+        if [ -z "$nome_arquivo" ]; then
+           zenity --error --title "Erro" --text "Nome do arquivo inválido. Selecione um arquivo válido!"
+           return
+        fi
+
+        sudo iptables-restore < "$nome_arquivo"
+        zenity --info --title "Restaurar regras do firewall" --text "As regras do firewall foram restauradas a partir de $nome_arquivo."
 }
+
+
+
 
 if [ $inicio ]
        	verificador=$1
